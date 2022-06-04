@@ -11,16 +11,19 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
 
     struct Land
     {
+        //[minX, maxX), [minY, maxY)
         int minX;
         int maxX;
         int minY;
         int maxY;
-    } constructor( string memory name, string memory symbol, string memory baseTokenURI
+    }
+
+    constructor( string memory name, string memory symbol, string memory baseTokenURI
     ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI){}
 
     function _area(Land memory land) pure internal returns (int) { return (land.maxX-land.minX)*(land.maxY-land.minY); }
     function max(int a, int b) internal pure returns (int) {return a >= b ? a : b;}
-    function min(int a, int b) internal pure returns (int) {return a >= b ? a : b;}
+    function min(int a, int b) internal pure returns (int) {return a <= b ? a : b;}
 
 
     //Mapping from tokenId address to a land
@@ -29,6 +32,10 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
     //requre: send is owner
     //split token to two, setTokenURI for original one, create new one
     //send new one to sender
+
+    function mint(address to) override public virtual {
+        mintReturnTokenId(to);
+    }    
 
     function mintReturnTokenId(address to) public virtual returns (uint256) {
         console.log("in mintReturnTokenId");
@@ -43,6 +50,7 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
     }
 
     function splitToken(uint256 tokenId, int splitX, int splitY) public virtual {
+        require(_exists(tokenId), "ERC721Land: requre tokenId exist");        
         require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721Land: caller is not owner nor approved");
         _burn(tokenId);
 
@@ -62,6 +70,8 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
     }
 
     function mergeToken(uint256 tokenIdA, uint256 tokenIdB) public virtual {
+        require(_exists(tokenIdA), "ERC721Land: requre tokenId exist");
+        require(_exists(tokenIdB), "ERC721Land: requre tokenId exist");
         require(_isApprovedOrOwner(_msgSender(), tokenIdA), "ERC721Land: caller is not owner nor approved");
         require(_isApprovedOrOwner(_msgSender(), tokenIdB), "ERC721Land: caller is not owner nor approved");
 
@@ -71,10 +81,12 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
 
         //merge horizontal
         if (lA.minY==lB.minY && lA.maxY==lB.maxY && (lA.maxX==lB.minX || lA.minX==lB.maxX)) {
+            console.log("merge horizontal");
             res = Land(min(lA.minX,lB.minX), max(lA.maxX,lB.maxX), lA.minY, lA.maxY);
         }
         //merge vertical
         else if (lA.minX==lB.minX && lA.maxX==lB.maxX && (lA.maxY==lB.minY || lA.minY==lB.maxY)) {
+            console.log("merge vertical");           
             res = Land(lA.minX, lA.maxX, min(lA.minY,lB.minY), max(lA.maxY,lB.maxY));
         }
         //cannot merge to rectangle
@@ -89,11 +101,13 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
     }
 
     function setTokenLand(uint256 tokenId, Land memory land) public virtual {
+        require(_exists(tokenId), "ERC721Land: requre tokenId exist");
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC721PresetMinterPauserAutoId: must have minter role to mint");
         landOfToken[tokenId] = land;
     }
 
-    function queryTokenLand(uint256 tokenId) public virtual returns (Land memory){
+    function queryTokenLand(uint256 tokenId) public view virtual returns (Land memory){
+        require(_exists(tokenId), "ERC721Land: requre tokenId exist");
         return landOfToken[tokenId];
     }
 }
