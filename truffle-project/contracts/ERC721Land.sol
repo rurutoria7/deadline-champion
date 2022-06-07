@@ -4,8 +4,9 @@ pragma solidity ^0.8.0;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
 import "../node_modules/@openzeppelin/contracts/token/ERC721/presets/ERC721PresetMinterPauserAutoId.sol";
+import "./ERC721Salable.sol";
 
-contract ERC721LAND is ERC721PresetMinterPauserAutoId {
+contract ERC721Land is ERC721Salable {
     using Counters for Counters.Counter;    
     Counters.Counter private _tokenIdTracker;
 
@@ -17,9 +18,11 @@ contract ERC721LAND is ERC721PresetMinterPauserAutoId {
         int minY;
         int maxY;
     }
-
-    constructor( string memory name, string memory symbol, string memory baseTokenURI
-    ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI){}
+    
+    constructor(
+        string memory name, string memory symbol, string memory baseTokenURI, 
+        ERC20PresetMinterPauser _erc20
+    ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) ERC721Salable(_erc20) {}
 
     function _area(Land memory land) pure internal returns (int) { return (land.maxX-land.minX)*(land.maxY-land.minY); }
     function max(int a, int b) internal pure returns (int) {return a >= b ? a : b;}
