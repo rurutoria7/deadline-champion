@@ -30,3 +30,4 @@
     - [ ] setFire 0 or 1
     - [ ] mapping (address -> [uint256]) readyToPay
     - [ ] insurance exist query
+    - [ ] on sale list

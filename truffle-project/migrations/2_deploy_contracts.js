@@ -1,5 +1,5 @@
-const ERC721LAND = artifacts.require("ERC721LAND");
+const Exchange = artifacts.require("Exchange");
 
 module.exports = function (deployer) {
-  deployer.deploy(ERC721LAND, "deadline-champion", "dlc", "QwQ");
+  deployer.deploy(Exchange, "Deadline-champion", "DLC", "DLC-Land", "DLCL", "");
 };
