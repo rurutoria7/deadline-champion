@@ -1,7 +1,7 @@
-- ERC721Land.splitLand: splitX, splitY might be illegal
-- 掛單系統
+- [ ] ERC721Land.splitLand: splitX, splitY might be illegal
+- [x] 掛單系統
 - events
-    - transaction(from, to, amount, id)
+    - [x] transaction(from, to, amount, id)
         description : 當交易地產時emit
         args :
             from : 賣家
@@ -13,14 +13,14 @@
         args :
             address : 獲得人
             id : NFT的id
-    - newInsurance(insured, beneficiary, premiums, benefit)
+    - [x] newInsurance(insured, beneficiary, premiums, benefit)
         description : 當一份保險成立(要保人繳保費)時emit
         args :
             insured : 要保人
             beneficiary : 受益人
             premiums : 保費
             benefit : 保額
-    - triggerInsurance(insured, beneficiary, benefit)
+    - [x] triggerInsurance(insured, beneficiary, benefit)
         description : 當保險觸發時emit
         args :
             insured : 要保人

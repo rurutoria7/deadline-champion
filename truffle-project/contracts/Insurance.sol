@@ -3,17 +3,19 @@
 pragma solidity ^0.8.0;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
+import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
 
 contract Insurance {
 
     ERC20PresetMinterPauser public erc20;
+    ERC721 public erc721;
 
     mapping (uint256 => address) insurer;
     mapping (uint256 => address) guarantor;
     mapping (uint256 => address) beneficiary;
     mapping (uint256 => address) validator;
 
-    mapping (uint256 => uint256) insuredTarget;
+    mapping (uint256 => uint256) insuredTargetTokenId;
     mapping (uint256 => uint256) soldPrice;
     mapping (uint256 => uint256) sumInsured;
     mapping (uint256 => uint256) expireLn;
@@ -25,8 +27,34 @@ contract Insurance {
 
     uint256 insuranceIdCounter;
 
-    constructor (ERC20PresetMinterPauser _erc20) {
+    event newInsurance (
+        address insurer,
+        address guarantor,
+        address beneficiary,
+        address validator,
+        uint256 insuredTargetTokenId,
+        uint256 soldPrice,
+        uint256 sumInsured,
+        uint256 expireLn,
+        uint256 insuranceId
+    );
+
+    event triggerInsurance (
+        address insurer,
+        address guarantor,
+        address beneficiary,
+        address validator,
+        uint256 insuredTargetTokenId,
+        uint256 soldPrice,
+        uint256 sumInsured,
+        uint256 expireLn,
+        uint256 triggerTime,
+        uint256 sumInsuredPercentage
+    );        
+
+    constructor (ERC20PresetMinterPauser _erc20, ERC721 _erc721) {
         erc20 = _erc20;
+        erc721 = _erc721;
         insuranceIdCounter = 0;
     }
 
@@ -59,6 +87,12 @@ contract Insurance {
         _;
     }
 
+    modifier guarantorIsOwner(uint256 id)  {
+        require(erc721.ownerOf(insuredTargetTokenId[id]) == guarantor[id], "Insurance: Guarantor is not owner of target token.");
+        _;
+
+    }
+
     function _saveTokenInBank(
         uint256 id,
         uint256 amount
@@ -87,6 +121,7 @@ contract Insurance {
         uint256 _sumInsured,
         uint256 _expireLn
     ) public {
+
         uint256 id = insuranceIdCounter;
         insuranceIdCounter += 1;
 
@@ -99,7 +134,7 @@ contract Insurance {
         beneficiary[id] = _beneficiary;
         validator[id] = _validator;
 
-        insuredTarget[id] = _insuredTarget;
+        insuredTargetTokenId[id] = _insuredTarget;
         soldPrice[id] = _soldPrice;
         sumInsured[id] = _sumInsured;
         expireLn[id] = _expireLn;
@@ -107,17 +142,42 @@ contract Insurance {
         getPaid[id] = false;
         exists[id] = true;
         createdTime[id] = block.timestamp;
+
+        emit newInsurance(
+            insurer[id],
+            guarantor[id],
+            beneficiary[id],
+            validator[id],
+            insuredTargetTokenId[id],
+            soldPrice[id],
+            sumInsured[id],
+            expireLn[id],
+            id
+        );
     }
 
     function triggerCompensation(
         uint256 id,
         uint256 sumInsuredPercentage
-    ) public requireExist(id) validatorOnly(id) requirePaid(id) {
+    ) public requireExist(id) validatorOnly(id) requirePaid(id) guarantorIsOwner(id) {
         //send required money to beneficiary
         uint256 claim = sumInsured[id]*sumInsuredPercentage/100;
         _takeTokenOutBank(id, beneficiary[id], claim);
         //stop contract
         stopContract(id);
+
+        event triggerInsurance (
+            insurer[id],
+            guarantor,
+            beneficiary[id],
+            validator[id],
+            insuredTargetTokenId[id],
+            soldPrice[id],
+            sumInsured[id],
+            expireLn[id],
+            block.timestamp,
+            sumInsuredPercentage
+        );        
     }
 
     function stopContract(
@@ -135,13 +195,13 @@ contract Insurance {
 
     function setBenificiary(
         uint256 id, address _beneficiary
-    ) public requireExist(id) guarantorOnly(id) {
+    ) public requireExist(id) guarantorOnly(id) guarantorIsOwner(id){
             beneficiary[id] = _beneficiary;
     }
 
     function pay(
         uint256 id
-    ) public requireExist(id) guarantorOnly(id) {
+    ) public requireExist(id) guarantorOnly(id) guarantorIsOwner(id){
         _saveTokenInBank(id,soldPrice[id]);
         getPaid[id] = true;
     }
@@ -159,7 +219,7 @@ contract Insurance {
     }       
 
     function queryInsuredTarget(uint256 id) public  requireExist(id) returns(uint256) {
-        return insuredTarget[id];
+        return insuredTargetTokenId[id];
     }   
 
     function querySoldPrice(uint256 id) public  requireExist(id) returns(uint256) {
