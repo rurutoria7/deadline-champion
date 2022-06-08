@@ -22,7 +22,7 @@ contract Exchange {
                 ERC721name, ERC721symbol,
                 ERC721baseTokenURI, erc20dlc
         );
-        insurance = new Insurance(erc20dlc);
+        insurance = new Insurance(erc20dlc, erc721land);
     }
 
     function getERC721Land() public view returns(ERC721Land) {

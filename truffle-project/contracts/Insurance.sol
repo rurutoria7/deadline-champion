@@ -43,11 +43,8 @@ contract Insurance {
         address insurer,
         address guarantor,
         address beneficiary,
-        address validator,
         uint256 insuredTargetTokenId,
-        uint256 soldPrice,
         uint256 sumInsured,
-        uint256 expireLn,
         uint256 triggerTime,
         uint256 sumInsuredPercentage
     );        
@@ -166,15 +163,12 @@ contract Insurance {
         //stop contract
         stopContract(id);
 
-        event triggerInsurance (
+        emit triggerInsurance (
             insurer[id],
-            guarantor,
+            guarantor[id],
             beneficiary[id],
-            validator[id],
             insuredTargetTokenId[id],
-            soldPrice[id],
             sumInsured[id],
-            expireLn[id],
             block.timestamp,
             sumInsuredPercentage
         );        

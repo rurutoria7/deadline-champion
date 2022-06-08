@@ -17,6 +17,7 @@ contract ERC721Land is ERC721Salable {
         int maxX;
         int minY;
         int maxY;
+        bool getFired;
     }
     
     constructor(
@@ -31,7 +32,7 @@ contract ERC721Land is ERC721Salable {
 
     //Mapping from tokenId address to a land
     mapping(uint256 => Land) landOfToken;
-    
+
     //requre: send is owner
     //split token to two, setTokenURI for original one, create new one
     //send new one to sender
@@ -58,10 +59,10 @@ contract ERC721Land is ERC721Salable {
 
         //split to 4
         Land storage original = landOfToken[tokenId];
-        Land[4] memory res = [Land(original.minX,splitX,original.minY,splitY)
-                            , Land(splitX,original.maxX,original.minY,splitY)
-                            , Land(original.minX,splitX,splitY,original.maxY)
-                            , Land(splitX,original.maxX,splitY,original.maxY)];
+        Land[4] memory res = [Land(original.minX,splitX,original.minY,splitY,false)
+                            , Land(splitX,original.maxX,original.minY,splitY,false)
+                            , Land(original.minX,splitX,splitY,original.maxY,false)
+                            , Land(splitX,original.maxX,splitY,original.maxY,false)];
         //if has area, mint, setLand, send to sender
         for (uint256 i=0; i<4; i++){
             if (_area(res[i]) > 0){
@@ -83,11 +84,11 @@ contract ERC721Land is ERC721Salable {
 
         //merge horizontal
         if (lA.minY==lB.minY && lA.maxY==lB.maxY && (lA.maxX==lB.minX || lA.minX==lB.maxX)) {
-            res = Land(min(lA.minX,lB.minX), max(lA.maxX,lB.maxX), lA.minY, lA.maxY);
+            res = Land(min(lA.minX,lB.minX), max(lA.maxX,lB.maxX), lA.minY, lA.maxY, false);
         }
         //merge vertical
         else if (lA.minX==lB.minX && lA.maxX==lB.maxX && (lA.maxY==lB.minY || lA.minY==lB.maxY)) {
-            res = Land(lA.minX, lA.maxX, min(lA.minY,lB.minY), max(lA.maxY,lB.maxY));
+            res = Land(lA.minX, lA.maxX, min(lA.minY,lB.minY), max(lA.maxY,lB.maxY), false);
         }
         //cannot merge to rectangle
         else{
