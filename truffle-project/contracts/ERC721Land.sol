@@ -112,7 +112,7 @@ contract ERC721Land is ERC721Salable {
         return landOfToken[tokenId];
     }
 
-    function setFife (uint256 tokenId, bool fire) public {
+    function setFire (uint256 tokenId, bool fire) public {
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC721Land: must have minter role to set fire");
         landOfToken[tokenId].getFired = fire;        
     }

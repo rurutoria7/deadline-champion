@@ -54,6 +54,8 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
 
     function queryOnSaleTokens() public returns(uint256[] memory) {
         uint256 l = onSaleTokens.length;
+
+        while (tmp.length > 0) tmp.pop();
         
         for (uint i=0; i<l; i++){
             if (forSale[onSaleTokens[i]]){
@@ -63,5 +65,9 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         onSaleTokens = tmp;
         
         return onSaleTokens;
+   }
+
+   function querySaler(uint256 tokenId) public view returns(address) {
+       return salerOf[tokenId];
    }
 }
