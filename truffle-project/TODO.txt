@@ -26,8 +26,8 @@
             insured : 要保人
             beneficiary : 受益人
             benefit : 保額
-    - [ ] address -> [uint]
-    - [ ] setFire 0 or 1
-    - [ ] mapping (address -> [uint256]) readyToPay
-    - [ ] insurance exist query
-    - [ ] on sale list
+    - [x] address -> [uint]
+    - [x] setFire 0 or 1
+    - [x] mapping (address -> [uint256]) readyToPay
+    - [x] insurance exist query
+    - [x] on sale list

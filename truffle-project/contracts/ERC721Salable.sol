@@ -12,8 +12,11 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
     mapping(uint256 => uint256) price;
     mapping(uint256 => address) salerOf;
 
-    event tradeMaded (address from, address to, uint256 price, uint256 tokenId);
+    //reversed mapping
+    mapping(address => uint256[]) salingTokens;
+    uint256[] onSaleTokens;
 
+    event tradeMaded (address from, address to, uint256 price, uint256 tokenId);
 
     constructor(ERC20PresetMinterPauser _erc20) {
         erc20 = _erc20;
@@ -26,6 +29,9 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         forSale[tokenId] = true;   
         price[tokenId] = _price;
         salerOf[tokenId] = ownerOf(tokenId);
+
+        salingTokens[salerOf[tokenId]].push(tokenId);
+        onSaleTokens.push(tokenId);
     }
 
     function unSale(uint256 tokenId) public {
@@ -41,4 +47,8 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         transferFrom(address(this), _msgSender(), tokenId);
         emit tradeMaded(salerOf[tokenId], _msgSender(), price[tokenId], tokenId);
     }
+
+    //function queryOnSaleTokens() public view returns(uint256[]) {
+       // tmp
+   // }
 }

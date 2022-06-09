@@ -120,11 +120,11 @@
 			]
 		},
 		"truffle-project/contracts/ERC721Salable.sol": {
-			"keccak256": "0x88b1145e1a3c37a1867fa4c30cbe8b9356b0e3ebb7cd08e9070225371b93f93f",
+			"keccak256": "0x5c7e67c177e8054b7bd47182f43dc0f59ae6a2c7022be5d714b415aa37b41397",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://94862c207b03d1f5fa2ad6ead5f92556684766bfe543a6cb7cfbb3fbe5681d5d",
-				"dweb:/ipfs/QmSPFpzzF14NK9nE3Ku7wTkDW7eVFynEatfbecuM9oTj5J"
+				"bzz-raw://1f14d560644468fca70984373556aa467ee28a0a87dbc51757dec1ff2eb12294",
+				"dweb:/ipfs/Qmba6Zsfm8kdXr42bhfM422GY6wtGgxDhyikgkWukhuYhw"
 			]
 		},
 		"truffle-project/contracts/Exchange.sol": {
@@ -136,11 +136,11 @@
 			]
 		},
 		"truffle-project/contracts/Insurance.sol": {
-			"keccak256": "0x6acee7bf4915fd3fa1d172deed11d2f3e0fd6cfd8ca12e1f81fffbc6b9371e38",
+			"keccak256": "0xeab783425156792f16919462a67c54fccb1ea09ea78b338921da516c98ecd978",
 			"license": "MIT",
 			"urls": [
-				"bzz-raw://9354566ab70cbb5ab1b5be16b49d44e32674131a59f88947eb57cbd2115c5df1",
-				"dweb:/ipfs/QmWoVu1VtWZYLtGNc2Qa7sJbWA7ZrygTJHXDPPyWUSxykm"
+				"bzz-raw://f1090674bee11f0380f491d16128e55d00d5629ba81c413ba8acde43c7f71d02",
+				"dweb:/ipfs/QmTQEXLe6f7kMLqGh5yvUu87sv9S14i1EvLUHAhHuK2U3i"
 			]
 		},
 		"truffle-project/node_modules/@openzeppelin/contracts/access/AccessControl.sol": {

@@ -107,8 +107,17 @@ contract ERC721Land is ERC721Salable {
         landOfToken[tokenId] = land;
     }
 
-    function queryTokenLand(uint256 tokenId) public view virtual returns (Land memory){
+    function queryTokenLand(uint256 tokenId) public view virtual returns(Land memory){
         require(_exists(tokenId), "ERC721Land: requre tokenId exist");
         return landOfToken[tokenId];
+    }
+
+    function setFife (uint256 tokenId, bool fire) public {
+        require(hasRole(MINTER_ROLE, _msgSender()), "ERC721Land: must have minter role to set fire");
+        landOfToken[tokenId].getFired = fire;        
+    }
+
+    function isFired (uint256 tokenId) public view returns(bool) {
+        return landOfToken[tokenId].getFired;
     }
 }

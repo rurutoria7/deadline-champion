@@ -25,6 +25,10 @@ contract Insurance {
     mapping (uint256 => uint256) bank;
     mapping (uint256 => bool) exists;
 
+    //reverse mapping
+    mapping (address => uint256[]) guarantorToId;
+    mapping (address => uint256[]) beneficiaryToId;
+
     uint256 insuranceIdCounter;
 
     event newInsurance (
@@ -76,11 +80,15 @@ contract Insurance {
         _;
     }
 
-    modifier requireExist(uint256 id) {
+    function isExist(uint256 id) public returns (bool) {
         if (block.timestamp > expireLn[id]+createdTime[id]) {
             stopContract(id);
         }
-        require(exists[id], "This insurance id is not exist");
+        return exists[id];
+    } 
+
+    modifier requireExist(uint256 id) {
+        require(isExist(id), "This insurance id is not exist");
         _;
     }
 
@@ -128,6 +136,7 @@ contract Insurance {
         //set info
         insurer[id] = msg.sender;
         guarantor[id] = _guarantor;
+        guarantorToId[guarantor[id]].push(id);
         beneficiary[id] = _beneficiary;
         validator[id] = _validator;
 
@@ -230,5 +239,17 @@ contract Insurance {
 
     function queryBank(uint256 id) public  requireExist(id) returns(uint256) {
         return bank[id];
-    }                   
+    }    
+
+    function queryGuarantorToId(address adr) public view returns (uint256[] memory) {
+        return guarantorToId[adr];
+    }
+
+    function queryBeneficiaryToId(address adr) public view returns (uint256[] memory) {
+        return beneficiaryToId[adr];
+    }
+
+    function queryGetPaid (uint256 tokenId) public view returns(bool) {
+        return getPaid[tokenId];
+    }
 }
