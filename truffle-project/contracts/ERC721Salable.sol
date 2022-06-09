@@ -13,8 +13,9 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
     mapping(uint256 => address) salerOf;
 
     //reversed mapping
-    mapping(address => uint256[]) salingTokens;
     uint256[] onSaleTokens;
+
+    uint256[] tmp;
 
     event tradeMaded (address from, address to, uint256 price, uint256 tokenId);
 
@@ -30,7 +31,6 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         price[tokenId] = _price;
         salerOf[tokenId] = ownerOf(tokenId);
 
-        salingTokens[salerOf[tokenId]].push(tokenId);
         onSaleTokens.push(tokenId);
     }
 
@@ -48,7 +48,20 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         emit tradeMaded(salerOf[tokenId], _msgSender(), price[tokenId], tokenId);
     }
 
-    //function queryOnSaleTokens() public view returns(uint256[]) {
-       // tmp
-   // }
+    function queryPrice(uint256 tokenId) public view returns(uint256){
+        return price[tokenId];
+    }
+
+    function queryOnSaleTokens() public returns(uint256[] memory) {
+        uint256 l = onSaleTokens.length;
+        
+        for (uint i=0; i<l; i++){
+            if (forSale[onSaleTokens[i]]){
+                tmp.push(onSaleTokens[i]);
+            }
+        }
+        onSaleTokens = tmp;
+        
+        return onSaleTokens;
+   }
 }

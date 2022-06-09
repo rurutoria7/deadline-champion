@@ -28,6 +28,9 @@ contract Insurance {
     //reverse mapping
     mapping (address => uint256[]) guarantorToId;
     mapping (address => uint256[]) beneficiaryToId;
+    mapping (address => uint256[]) validatorToId;
+
+    uint256[] tmp;
 
     uint256 insuranceIdCounter;
 
@@ -136,10 +139,13 @@ contract Insurance {
         //set info
         insurer[id] = msg.sender;
         guarantor[id] = _guarantor;
-        guarantorToId[guarantor[id]].push(id);
         beneficiary[id] = _beneficiary;
         validator[id] = _validator;
 
+        guarantorToId[guarantor[id]].push(id);
+        beneficiaryToId[beneficiary[id]].push(id);
+        validatorToId[validator[id]].push(id);
+        
         insuredTargetTokenId[id] = _insuredTarget;
         soldPrice[id] = _soldPrice;
         sumInsured[id] = _sumInsured;
@@ -199,7 +205,18 @@ contract Insurance {
     function setBenificiary(
         uint256 id, address _beneficiary
     ) public requireExist(id) guarantorOnly(id) guarantorIsOwner(id){
+
+            while (tmp.length > 0) tmp.pop();
+            uint256 l = beneficiaryToId[beneficiary[id]].length;
+
+            for (uint i=0; i<l; i++) {
+                if (beneficiaryToId[beneficiary[id]][i] == id) continue;
+                tmp.push(beneficiaryToId[beneficiary[id]][i]);
+            }
+            beneficiaryToId[beneficiary[id]] = tmp;
+
             beneficiary[id] = _beneficiary;
+            beneficiaryToId[beneficiary[id]].push(id);            
     }
 
     function pay(
@@ -214,11 +231,11 @@ contract Insurance {
     }
 
     function queryBeneficiary(uint256 id) public  requireExist(id) returns(address) {
-        return guarantor[id];
+        return beneficiary[id];
     }   
 
     function queryValidator(uint256 id) public  requireExist(id) returns(address) {
-        return guarantor[id];
+        return validator[id];
     }       
 
     function queryInsuredTarget(uint256 id) public  requireExist(id) returns(uint256) {
@@ -241,12 +258,16 @@ contract Insurance {
         return bank[id];
     }    
 
-    function queryGuarantorToId(address adr) public view returns (uint256[] memory) {
+    function queryGuarantorToId(address adr) public view returns(uint256[] memory) {
         return guarantorToId[adr];
     }
 
-    function queryBeneficiaryToId(address adr) public view returns (uint256[] memory) {
+    function queryBeneficiaryToId(address adr) public view returns(uint256[] memory) {
         return beneficiaryToId[adr];
+    }
+
+    function queryValidatorToId(address adr) public view returns(uint256[] memory) {
+        return validatorToId[adr];
     }
 
     function queryGetPaid (uint256 tokenId) public view returns(bool) {

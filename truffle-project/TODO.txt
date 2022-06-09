@@ -31,3 +31,5 @@
     - [x] mapping (address -> [uint256]) readyToPay
     - [x] insurance exist query
     - [x] on sale list
+    - [ ] insurance when target NFT is transfered
+    - [ ] query price
