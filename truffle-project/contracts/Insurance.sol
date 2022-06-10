@@ -84,7 +84,7 @@ contract Insurance {
     }
 
     function isExist(uint256 id) public returns (bool) {
-        if (block.timestamp > expireLn[id]+createdTime[id]) {
+        if (exists[id] && block.timestamp > expireLn[id]+createdTime[id]) {
             stopContract(id);
         }
         return exists[id];
@@ -105,8 +105,8 @@ contract Insurance {
         uint256 id,
         uint256 amount
     ) internal {
-        require(erc20.balanceOf(msg.sender) > amount);
-        erc20.transfer(address(this), amount);
+        require(erc20.balanceOf(msg.sender) > amount, "Insurance: balance not enough");
+        erc20.transferFrom(msg.sender, address(this), amount);
         bank[id] += amount;
     }
 
@@ -115,6 +115,7 @@ contract Insurance {
         address to, 
         uint256 amount
     ) internal {
+        erc20.approve(address(this), amount);
         erc20.transferFrom(address(this), to, amount);
         bank[id] -= amount;
     }
@@ -225,35 +226,35 @@ contract Insurance {
         getPaid[id] = true;
     }
 
-    function queryInsurer(uint256 id) public requireExist(id) returns(address) {
+    function queryInsurer(uint256 id) public view returns(address) {
         return insurer[id];
     }
 
-    function queryBeneficiary(uint256 id) public  requireExist(id) returns(address) {
+    function queryBeneficiary(uint256 id) public view returns(address) {
         return beneficiary[id];
     }   
 
-    function queryValidator(uint256 id) public  requireExist(id) returns(address) {
+    function queryValidator(uint256 id) public  view returns(address) {
         return validator[id];
     }       
 
-    function queryInsuredTarget(uint256 id) public  requireExist(id) returns(uint256) {
+    function queryInsuredTarget(uint256 id) public view returns(uint256) {
         return insuredTargetTokenId[id];
     }   
 
-    function querySoldPrice(uint256 id) public  requireExist(id) returns(uint256) {
+    function querySoldPrice(uint256 id) public  view returns(uint256) {
         return soldPrice[id];
     }   
 
-    function querySumInsured(uint256 id) public  requireExist(id) returns(uint256) {
+    function querySumInsured(uint256 id) public view returns(uint256) {
         return sumInsured[id];
     }   
 
-    function queryExpireLn(uint256 id) public  requireExist(id) returns(uint256) {
+    function queryExpireLn(uint256 id) public view returns(uint256) {
         return expireLn[id];
     }   
 
-    function queryBank(uint256 id) public  requireExist(id) returns(uint256) {
+    function queryBank(uint256 id) public view returns(uint256) {
         return bank[id];
     }    
 

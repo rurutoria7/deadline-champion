@@ -26,6 +26,8 @@ contract ROSCA {
     }
     
     // won: baseFee, else: baseFee-bid
+    mapping(uint256 => uint256) payLn;
+    mapping(uint256 => uint256) bidLn;
     mapping(uint256 => uint256) baseFee;
     mapping(uint256 => uint256) minBid;
     mapping(uint256 => Identity[]) members; //include head
@@ -90,6 +92,10 @@ contract ROSCA {
         members[rid] = members[rid];
     
         return rid;
+    }
+
+    function pushNextStage(uint256 rid) public{
+        
     }
 
     function attend(uint256 rid) public{

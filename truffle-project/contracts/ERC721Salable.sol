@@ -12,11 +12,6 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
     mapping(uint256 => uint256) price;
     mapping(uint256 => address) salerOf;
 
-    //reversed mapping
-    uint256[] onSaleTokens;
-
-    uint256[] tmp;
-
     event tradeMaded (address from, address to, uint256 price, uint256 tokenId);
 
     constructor(ERC20PresetMinterPauser _erc20) {
@@ -24,48 +19,32 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
     }
 
     function sale(uint256 tokenId, uint256 _price) public {
-        require(_isApprovedOrOwner(_msgSender(), tokenId), "ERC721Salable: transfer caller is not owner nor approved");
+        require(ownerOf(tokenId) == _msgSender(), "ERC721Salable: transfer caller is not owner");
         require(_exists(tokenId), "ERC721Salable: URI query for nonexistent token");
-
+        
         forSale[tokenId] = true;   
         price[tokenId] = _price;
         salerOf[tokenId] = ownerOf(tokenId);
-
-        onSaleTokens.push(tokenId);
+        _transfer(_msgSender(), address(this), tokenId);
     }
 
     function unSale(uint256 tokenId) public {
         require(salerOf[tokenId]==_msgSender(), "ERC721Salable: you're not saler of this token.");
         forSale[tokenId] = false;
-        transferFrom(address(this), salerOf[tokenId], tokenId);
+        _transfer(address(this), salerOf[tokenId], tokenId);
     }
 
     function buy(uint256 tokenId) public {
         require(forSale[tokenId], "ERC721Salable: this token is not salable");
         forSale[tokenId] = false;
-        erc20.transfer(salerOf[tokenId], price[tokenId]);
-        transferFrom(address(this), _msgSender(), tokenId);
+        erc20.transferFrom(_msgSender(), salerOf[tokenId], price[tokenId]);
+        _transfer(address(this), _msgSender(), tokenId);
         emit tradeMaded(salerOf[tokenId], _msgSender(), price[tokenId], tokenId);
     }
 
     function queryPrice(uint256 tokenId) public view returns(uint256){
         return price[tokenId];
     }
-
-    function queryOnSaleTokens() public returns(uint256[] memory) {
-        uint256 l = onSaleTokens.length;
-
-        while (tmp.length > 0) tmp.pop();
-        
-        for (uint i=0; i<l; i++){
-            if (forSale[onSaleTokens[i]]){
-                tmp.push(onSaleTokens[i]);
-            }
-        }
-        onSaleTokens = tmp;
-        
-        return onSaleTokens;
-   }
 
    function querySaler(uint256 tokenId) public view returns(address) {
        return salerOf[tokenId];
