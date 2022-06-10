@@ -129,9 +129,6 @@ contract Insurance {
         uint256 _sumInsured,
         uint256 _expireLn
     ) public {
-
-        require(erc721.ownerOf(_insuredTarget) == _guarantor, "Insurance: Guarantor is not owner of insured target.");
-
         uint256 id = insuranceIdCounter;
         insuranceIdCounter += 1;
 
