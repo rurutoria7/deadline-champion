@@ -18,7 +18,9 @@ contract ERC721Land is ERC721Salable {
     constructor(
         string memory name, string memory symbol, string memory baseTokenURI, 
         ERC20PresetMinterPauser _erc20
-    ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) ERC721Salable(_erc20) {}
+    ) ERC721PresetMinterPauserAutoId(name, symbol, baseTokenURI) ERC721Salable(_erc20) {
+        multiMint(_msgSender(), 45);
+    }
 
     // function _area(Land memory land) pure internal returns (int) { return (land.maxX-land.minX)*(land.maxY-land.minY); }
     function max(int a, int b) internal pure returns (int) {return a >= b ? a : b;}
