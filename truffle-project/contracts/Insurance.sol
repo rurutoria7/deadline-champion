@@ -54,7 +54,12 @@ contract Insurance {
         uint256 triggerTime,
         uint256 sumInsuredPercentage
     );
-    event guarantorPaid (uint256 id);        
+    event guarantorPaid (
+        address guarantor,
+        uint256 insuredTargetTokenId,
+        uint256 sumInsured,
+        uint256 insuranceId
+    );       
 
     constructor (ERC20PresetMinterPauser _erc20, ERC721Land _erc721) {
         erc20 = _erc20;
@@ -233,7 +238,12 @@ contract Insurance {
         //fee to validator
         _takeTokenOutBank(id, validator[id], soldPrice[id]/20);
         getPaid[id] = true;
-        emit guarantorPaid(id);
+        emit guarantorPaid (
+            guarantor[id],
+            insuredTargetTokenId[id],
+            sumInsured[id],
+            id
+        );       
     }
 
     function queryInsurer(uint256 id) requireExist(id) public view returns(address) {

@@ -14,7 +14,7 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
 
     event tradeMaded (address from, address to, uint256 price, uint256 tokenId);
     event onSaleEvent (address saler, uint256 tokenId, uint256 price);
-    event unSaleEvent (address buyer, uint256 tokenId);
+    event unSaleEvent (uint256 tokenId);
 
     constructor(ERC20PresetMinterPauser _erc20) {
         erc20 = _erc20;
@@ -38,7 +38,7 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
         forSale[tokenId] = false;
         salerOf[tokenId] = address(0);
 
-        emit unSaleEvent(_msgSender(), tokenId);
+        emit unSaleEvent(tokenId);
     }
 
     function buy(uint256 tokenId) public {

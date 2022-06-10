@@ -32,4 +32,10 @@
     - [x] insurance exist query
     - [x] on sale list
     - [ ] insurance when target NFT is transfered
-    - [ ] query price
+    - [x] query price
+    - [x] sale event
+    - [x] unsale event
+    - [x] get fire event
+    - [x] guarantor pay event
+    - [x] exist 
+    - [x] set fire 0 when build insurance 🏠
