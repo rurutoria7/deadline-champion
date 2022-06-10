@@ -83,10 +83,9 @@ contract Insurance {
         _;
     }
 
-    function isExist(uint256 id) public returns (bool) {
-        if (exists[id] && block.timestamp > expireLn[id]+createdTime[id]) {
-            stopContract(id);
-        }
+    function isExist(uint256 id) public view returns (bool) {
+        if (exists[id] && block.timestamp > expireLn[id]+createdTime[id])
+            return false;
         return exists[id];
     } 
 
@@ -168,6 +167,19 @@ contract Insurance {
         );
     }
 
+    function withDraw(uint256 id) public insurerOnly(id) {
+        require(!isExist(id), "the insurance is not ended");
+        _takeTokenOutBank(
+            id,
+            insurer[id],
+            bank[id]
+        );
+    }
+
+    function _stopContract(uint256 id) internal {
+        exists[id] = false;        
+    }
+
     function triggerCompensation(
         uint256 id,
         uint256 sumInsuredPercentage
@@ -175,8 +187,7 @@ contract Insurance {
         //send required money to beneficiary
         uint256 claim = sumInsured[id]*sumInsuredPercentage/100;
         _takeTokenOutBank(id, beneficiary[id], claim);
-        //stop contract
-        stopContract(id);
+        _stopContract(id);
 
         emit triggerInsurance (
             insurer[id],
@@ -192,14 +203,7 @@ contract Insurance {
     function stopContract(
         uint256 id
     ) public requireExist(id) guarantorOnly(id) { 
-        // transfer money to company
-        _takeTokenOutBank(
-            id,
-            insurer[id],
-            bank[id]
-        );
-        // exist = false
-        exists[id] = false;
+        _stopContract(id);
     }
 
     function setBenificiary(
@@ -222,43 +226,45 @@ contract Insurance {
     function pay(
         uint256 id
     ) public requireExist(id) guarantorOnly(id) guarantorIsOwner(id){
-        _saveTokenInBank(id,soldPrice[id]);
+        _saveTokenInBank(id,soldPrice[id]+soldPrice[id]/20);
+        //fee to validator
+        _takeTokenOutBank(id, validator[id], soldPrice[id]/20);
         getPaid[id] = true;
     }
 
-    function queryInsurer(uint256 id) public view returns(address) {
+    function queryInsurer(uint256 id) requireExist(id) public view returns(address) {
         return insurer[id];
     }
 
-    function queryBeneficiary(uint256 id) public view returns(address) {
+    function queryBeneficiary(uint256 id) requireExist(id) public view returns(address) {
         return beneficiary[id];
     }   
 
-    function queryValidator(uint256 id) public  view returns(address) {
+    function queryValidator(uint256 id) requireExist(id) public  view returns(address) {
         return validator[id];
     }       
 
-    function queryInsuredTarget(uint256 id) public view returns(uint256) {
+    function queryInsuredTarget(uint256 id) requireExist(id) public view returns(uint256) {
         return insuredTargetTokenId[id];
     }   
 
-    function querySoldPrice(uint256 id) public  view returns(uint256) {
+    function querySoldPrice(uint256 id) requireExist(id) public  view returns(uint256) {
         return soldPrice[id];
     }   
 
-    function querySumInsured(uint256 id) public view returns(uint256) {
+    function querySumInsured(uint256 id) requireExist(id) public view returns(uint256) {
         return sumInsured[id];
     }   
 
-    function queryExpireLn(uint256 id) public view returns(uint256) {
+    function queryExpireLn(uint256 id) requireExist(id) public view returns(uint256) {
         return expireLn[id];
     }   
 
-    function queryBank(uint256 id) public view returns(uint256) {
+    function queryBank(uint256 id) requireExist(id) public view returns(uint256) {
         return bank[id];
     }    
 
-    function queryGuarantorToId(address adr) public view returns(uint256[] memory) {
+    function queryGuarantorToId(address adr)  public view returns(uint256[] memory) {
         return guarantorToId[adr];
     }
 
