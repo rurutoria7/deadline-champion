@@ -30,9 +30,9 @@ abstract contract ERC721Salable is ERC721PresetMinterPauserAutoId {
 
     function unSale(uint256 tokenId) public {
         require(salerOf[tokenId]==_msgSender(), "ERC721Salable: you're not saler of this token.");
+        _transfer(address(this), salerOf[tokenId], tokenId);
         forSale[tokenId] = false;
         salerOf[tokenId] = address(0);
-        _transfer(address(this), salerOf[tokenId], tokenId);
     }
 
     function buy(uint256 tokenId) public {
