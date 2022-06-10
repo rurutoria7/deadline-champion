@@ -30,6 +30,9 @@ contract ERC721Land is ERC721Salable {
     //Mapping from tokenId address to a land
     mapping(uint256 => Land) landOfToken;
 
+    event getFireEvent(uint256 tokenId);
+    event putOffFireEvent(uint256 tokenId);
+
     //requre: send is owner
     //split token to two, setTokenURI for original one, create new one
     //send new one to sender
@@ -109,9 +112,17 @@ contract ERC721Land is ERC721Salable {
         return landOfToken[tokenId];
     }
 
-    function setFire (uint256 tokenId, bool fire) public {
+    function setFire (uint256 tokenId) public {
         require(hasRole(MINTER_ROLE, _msgSender()), "ERC721Land: must have minter role to set fire");
-        landOfToken[tokenId].getFired = fire;        
+        emit getFireEvent(tokenId);
+        landOfToken[tokenId].getFired = true;        
+    }
+
+    function putOffFire (uint256 tokenId) public {
+        if (landOfToken[tokenId].getFired){
+            emit putOffFireEvent(tokenId);
+            landOfToken[tokenId].getFired = false;
+        }
     }
 
     function isFired (uint256 tokenId) public view returns(bool) {

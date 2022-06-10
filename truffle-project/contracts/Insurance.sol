@@ -3,12 +3,12 @@
 pragma solidity ^0.8.0;
 
 import "../node_modules/@openzeppelin/contracts/token/ERC20/presets/ERC20PresetMinterPauser.sol";
-import "../node_modules/@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "./ERC721Land.sol";
 
 contract Insurance {
 
     ERC20PresetMinterPauser public erc20;
-    ERC721 public erc721;
+    ERC721Land public erc721;
 
     mapping (uint256 => address) insurer;
     mapping (uint256 => address) guarantor;
@@ -45,7 +45,6 @@ contract Insurance {
         uint256 expireLn,
         uint256 insuranceId
     );
-
     event triggerInsurance (
         address insurer,
         address guarantor,
@@ -54,9 +53,10 @@ contract Insurance {
         uint256 sumInsured,
         uint256 triggerTime,
         uint256 sumInsuredPercentage
-    );        
+    );
+    event guarantorPaid (uint256 id);        
 
-    constructor (ERC20PresetMinterPauser _erc20, ERC721 _erc721) {
+    constructor (ERC20PresetMinterPauser _erc20, ERC721Land _erc721) {
         erc20 = _erc20;
         erc721 = _erc721;
         insuranceIdCounter = 0;
@@ -85,6 +85,8 @@ contract Insurance {
 
     function isExist(uint256 id) public view returns (bool) {
         if (exists[id] && block.timestamp > expireLn[id]+createdTime[id])
+            return false;
+        if (exists[id] && erc721.ownerOf(insuredTargetTokenId[id]) != guarantor[id])
             return false;
         return exists[id];
     } 
@@ -188,6 +190,7 @@ contract Insurance {
         uint256 claim = sumInsured[id]*sumInsuredPercentage/100;
         _takeTokenOutBank(id, beneficiary[id], claim);
         _stopContract(id);
+        erc721.putOffFire(insuredTargetTokenId[id]);
 
         emit triggerInsurance (
             insurer[id],
@@ -197,7 +200,7 @@ contract Insurance {
             sumInsured[id],
             block.timestamp,
             sumInsuredPercentage
-        );        
+        );
     }
 
     function stopContract(
@@ -230,6 +233,7 @@ contract Insurance {
         //fee to validator
         _takeTokenOutBank(id, validator[id], soldPrice[id]/20);
         getPaid[id] = true;
+        emit guarantorPaid(id);
     }
 
     function queryInsurer(uint256 id) requireExist(id) public view returns(address) {
