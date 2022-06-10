@@ -120,4 +120,11 @@ contract ERC721Land is ERC721Salable {
     function isFired (uint256 tokenId) public view returns(bool) {
         return landOfToken[tokenId].getFired;
     }
+
+    function multiMint (address to, uint256 amount) public{
+        require(hasRole(MINTER_ROLE, _msgSender()), "ERC721Land: must have minter role to mint");        
+        for (uint i=0; i<amount; i++){
+            mintReturnTokenId(to);
+        }
+    }
 }
