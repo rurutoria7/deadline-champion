@@ -250,6 +250,10 @@ contract Insurance {
         return insurer[id];
     }
 
+    function queryGuaranto(uint256 id) requireExist(id) public view returns(address) {
+        return guarantor[id];
+    }
+
     function queryBeneficiary(uint256 id) requireExist(id) public view returns(address) {
         return beneficiary[id];
     }   
@@ -265,6 +269,7 @@ contract Insurance {
     function querySoldPrice(uint256 id) requireExist(id) public  view returns(uint256) {
         return soldPrice[id];
     }   
+
 
     function querySumInsured(uint256 id) requireExist(id) public view returns(uint256) {
         return sumInsured[id];
