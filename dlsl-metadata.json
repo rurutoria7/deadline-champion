@@ -1,0 +1,18 @@
+{
+    "title": "Deadline Saga Land",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "description": "Deadline Saga Land"
+        },
+        "description": {
+            "type": "string",
+            "description": "Own estate in DeFi, trade them, and make insurance to protect theml"
+        },
+        "image": {
+            "type": "string",
+            "description": "https://ipfs.io/ipfs/QmWMZq4Neucdex3iVCdbWZwpVnsqs42S4dFVYYdPkFebpk/"
+        }
+    }
+}
